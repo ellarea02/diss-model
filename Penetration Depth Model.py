@@ -43,7 +43,7 @@ Oxygen10 = np.empty(nsteps)
 
 ####HAS FILLED IN GAPS WITH -9999
 
-Oxygencsv = Dataset("/Users/ellarea/Documents/UNIVERSITY/Dissertation/Figures/Oxygen Data (Time & Depth)/blksea_omi_health_oxygen_trend_annual_P20220610 (3).nc")
+Oxygencsv = Dataset("blksea_omi_health_oxygen_trend_annual_P20220610.nc")
 print(Oxygencsv)
 print(Oxygencsv['time'])
 
@@ -67,62 +67,62 @@ print(OxygenConc)
 
 
 #Nutrient inputs 1970 - 2050
-DINInputsNorthcsv = pd.read_csv("/Users/ellarea/Documents/UNIVERSITY/Dissertation/DIN North Black Sea Inputs.csv", header = None)
+DINInputsNorthcsv = pd.read_csv("DINNorthBlackSeaInputs.csv", header = None)
 DINInputsNorth = DINInputsNorthcsv.values
 print(DINInputsNorth)
 
-DINInputsSouthcsv= pd.read_csv("/Users/ellarea/Documents/UNIVERSITY/Dissertation/DIN South Black Sea Inputs.csv", header = None)
+DINInputsSouthcsv= pd.read_csv("DINSouthBlackSeaInputs.csv", header = None)
 DINInputsSouth = DINInputsSouthcsv.values
 print(DINInputsSouth)
 
 
-DINInputsAzovcsv= pd.read_csv("/Users/ellarea/Documents/UNIVERSITY/Dissertation/DIN Azov Sea Inputs.csv", header = None)
+DINInputsAzovcsv= pd.read_csv("DINAzovSeaInputs.csv", header = None)
 DINInputsAzov = DINInputsAzovcsv.values
 print(DINInputsAzov)
 
 
-DONInputsNorthcsv= pd.read_csv("/Users/ellarea/Documents/UNIVERSITY/Dissertation/DON North Black Sea Inputs.csv", header = None)
+DONInputsNorthcsv= pd.read_csv("DONNorthBlackSeaInputs.csv", header = None)
 DONInputsNorth = DONInputsNorthcsv.values
 print(DONInputsNorth)
 
 
-DONInputSouthcsv= pd.read_csv("/Users/ellarea/Documents/UNIVERSITY/Dissertation/DON South Black Sea Inputs.csv", header = None)
+DONInputSouthcsv= pd.read_csv("DONSouthBlackSeaInputs.csv", header = None)
 DONInputsSouth = DONInputSouthcsv.values
 print(DONInputsSouth)
 
 
-DONInputAzovcsv= pd.read_csv("/Users/ellarea/Documents/UNIVERSITY/Dissertation/DON Azov Sea Inputs.csv", header = None)
+DONInputAzovcsv= pd.read_csv("DONAzovSeaInputs.csv", header = None)
 DONInputsAzov = DONInputAzovcsv.values
 print(DONInputsAzov)
 
 
-DIPInputsNorthcsv= pd.read_csv("/Users/ellarea/Documents/UNIVERSITY/Dissertation/DIP North Black Sea Inputs.csv", header = None)
+DIPInputsNorthcsv= pd.read_csv("DIPNorthBlackSeaInputs.csv", header = None)
 DIPInputsNorth = DIPInputsNorthcsv.values
 print(DIPInputsNorth)
 
 
-DIPInputsSouthcsv= pd.read_csv("/Users/ellarea/Documents/UNIVERSITY/Dissertation/DIP South Black Sea Inputs.csv", header = None)
+DIPInputsSouthcsv= pd.read_csv("DIPSouthBlackSeaInputs.csv", header = None)
 DIPInputsSouth = DIPInputsSouthcsv.values
 print(DIPInputsSouth)
 
 
-DIPInputsAzovcsv= pd.read_csv("/Users/ellarea/Documents/UNIVERSITY/Dissertation/DIP Azov Sea Inputs.csv", header = None)
+DIPInputsAzovcsv= pd.read_csv("DIPAzovSeaInputs.csv", header = None)
 DIPInputsAzov = DIPInputsAzovcsv.values
 print(DIPInputsAzov)
 
 
-DOPInputsNorthcsv= pd.read_csv("/Users/ellarea/Documents/UNIVERSITY/Dissertation/DOP North Black Sea Inputs.csv", header = None)
+DOPInputsNorthcsv= pd.read_csv("DOPNorthBlackSeaInputs.csv", header = None)
 DOPInputsNorth = DOPInputsNorthcsv.values
 print(DOPInputsNorth)
 
 
 
-DOPInputsSouthcsv= pd.read_csv("/Users/ellarea/Documents/UNIVERSITY/Dissertation/DOP South Black Sea Inputs.csv", header = None)
+DOPInputsSouthcsv= pd.read_csv("DOPSouthBlackSeaInputs.csv", header = None)
 DOPInputsSouth = DOPInputsSouthcsv.values
 print(DOPInputsSouth)
 
 
-DOPInputsAzovcsv= pd.read_csv("/Users/ellarea/Documents/UNIVERSITY/Dissertation/DOP Azov Sea Inputs.csv", header = None)
+DOPInputsAzovcsv= pd.read_csv("DOPAzovSeaInputs.csv", header = None)
 DOPInputsAzov = DOPInputsAzovcsv.values
 print(DOPInputsAzov)
 
@@ -182,14 +182,33 @@ DINNutrientInputs = DINNutrientInputs_df.values
 # Print the NumPy array
 print(DINNutrientInputs)
 
+
+### do averages for 2030 and 2050, and add years
+DIN_input_total = np.array([ DINNutrientInputs[0,1] , DINNutrientInputs[1,1] , ( DINNutrientInputs[2,1] + DINNutrientInputs[3,1] )/2 , (DINNutrientInputs[4,1] + DINNutrientInputs[5,1])/2 ])
+input_times = np.array([1970 , 2000 , 2030, 2050])
+
+
 #SST data 1993-2022
-SeaSurfaceTemp= Dataset("/Users/ellarea/Documents/UNIVERSITY/Dissertation/Figures/Temperature over Time/SST 1993-2022")
-print(SeaSurfaceTemp)
+#SeaSurfaceTemp= Dataset("Temperature over Time/SST 1993-2022")
+#print(SeaSurfaceTemp)
 
 t = np.empty(nsteps)
 # Model of oxygen penetration depth over time
 
 maxoxygendepth = np.empty(nsteps)
+
+
+### set initial oxygen concentration
+Oxygen1[0] = 100 ;
+Oxygen2[0] = 100 ;
+Oxygen3[0] = 100 ;
+Oxygen4[0] = 100 ;
+Oxygen5[0] = 100 ;
+Oxygen6[0] = 100 ;
+Oxygen7[0] = 100 ;
+Oxygen8[0] = 100 ;
+Oxygen9[0] = 100 ;
+Oxygen10[0] = 100 ;
 
 for n in np.arange(0, nsteps, 1):
     # Calculate oxygen model parameters and processes at this timestep AND DEPTH OF EACH LAYER (dz)
@@ -223,30 +242,38 @@ for n in np.arange(0, nsteps, 1):
     # Update the model reservoirs by adding and subtracting sources and sinks
     #### We multiply by dt because each source or sink process is defined in Gt of carbon per year
     #### On the final model step (n = steps) we do not calculate the future reservoir sizes, hence the 'if' statement
-Resp_1 = 0.33 ;
-Resp_2 = 0.33 ;
-Resp_3 = 0.34 ;
+    k_resp = 0.1 ;
+    Resp_1 = k_resp ;
+    Resp_2 = k_resp ;
+    Resp_3 = k_resp ;
+    Resp_4 = k_resp ;
+    Resp_5 = k_resp ;
+    Resp_6 = k_resp ;
+    Resp_7 = k_resp ;
+    Resp_8 = k_resp ;
+    Resp_9 = k_resp ;
+    Resp_10 = k_resp ;
 
     
     # Accounting for respiration
     # Oxygen1, Oxygen2, Oxygen3 < 0.00002
-if np.min(OxygenConc) < 0.00002:
-        respiration_on = False
-        if respiration_on:
-            if n < nsteps-1:
-                Oxygen1[n+1] = Oxygen1[n] + ( Airsea + Up_2 - Down_1 - Resp_1 + DINNutrientInputs['1970'] + DONNutrientInputs['1970'] + DIPNutrientInputs['1970'] + DOPNutrientInputs['1970']) * dt ;
-                Oxygen2[n+1] = Oxygen2[n] + ( Down_1 - Down_2 - Up_2 + Up_3 - Resp_2 ) * dt ;
-                Oxygen3[n+1] = Oxygen3[n] + ( Down_2 - Down_3 - Up_3 + Up_4 - Resp_3 ) * dt ;
-                Oxygen4[n+1] = Oxygen4[n] + ( Down_3 - Down_4 - Up_4 + Up_5 ) * dt
-                Oxygen5[n+1] = Oxygen5[n] + ( Down_4 - Down_5 - Up_5 + Up_6 ) * dt
-                Oxygen6[n+1] = Oxygen6[n] + ( Down_5 - Down_6 - Up_6 + Up_7 ) * dt
-                Oxygen7[n+1] = Oxygen7[n] + ( Down_6 - Down_7 - Up_7 + Up_8 ) * dt
-                Oxygen8[n+1] = Oxygen8[n] + ( Down_7 - Down_8 - Up_8 + Up_9 ) * dt
-                Oxygen9[n+1] = Oxygen9[n] + ( Down_8 - Down_9 - Up_9 + Up_10 ) * dt
-                Oxygen10[n+1] = Oxygen10[n] + ( Down_9 - Up_10) * dt
+
+
+
+    if n < nsteps-1:
+        Oxygen1[n+1] = Oxygen1[n] + ( Airsea + Up_2 - Down_1 - Resp_1 ) * dt ;
+        Oxygen2[n+1] = Oxygen2[n] + ( Down_1 - Down_2 - Up_2 + Up_3 - Resp_2 ) * dt ;
+        Oxygen3[n+1] = Oxygen3[n] + ( Down_2 - Down_3 - Up_3 + Up_4 - Resp_3 ) * dt ;
+        Oxygen4[n+1] = Oxygen4[n] + ( Down_3 - Down_4 - Up_4 + Up_5 - Resp_4 ) * dt
+        Oxygen5[n+1] = Oxygen5[n] + ( Down_4 - Down_5 - Up_5 + Up_6 - Resp_5 ) * dt
+        Oxygen6[n+1] = Oxygen6[n] + ( Down_5 - Down_6 - Up_6 + Up_7 - Resp_6) * dt
+        Oxygen7[n+1] = Oxygen7[n] + ( Down_6 - Down_7 - Up_7 + Up_8 - Resp_7) * dt
+        Oxygen8[n+1] = Oxygen8[n] + ( Down_7 - Down_8 - Up_8 + Up_9 - Resp_8) * dt
+        Oxygen9[n+1] = Oxygen9[n] + ( Down_8 - Down_9 - Up_9 + Up_10 - Resp_9) * dt
+        Oxygen10[n+1] = Oxygen10[n] + ( Down_9 - Up_10 - Resp_10) * dt
                 
-                #### Update model time         
-                t[n+1] = t[n] + dt ;
+        #### Update model time         
+        t[n+1] = t[n] + dt ;
         
 #### make a single large figure
 fig = plt.figure(figsize=(12,6))
