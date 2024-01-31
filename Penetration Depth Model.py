@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from netCDF4 import Dataset
+import matplotlib.gridspec as gridspec
 
 
 
@@ -141,6 +142,12 @@ DOPNutrientInputs = DOPNutrientInputs_df.values
 # Print the NumPy array
 print(DOPNutrientInputs)
 
+### do averages for 2030 and 2050, and add years
+DOP_input_total = np.array([ DOPNutrientInputs[0,1] , DOPNutrientInputs[1,1] , ( DOPNutrientInputs[2,1] + DOPNutrientInputs[3,1] )/2 , (DOPNutrientInputs[4,1] + DOPNutrientInputs[5,1])/2 ])
+input_times = np.array([1970 , 2000 , 2030, 2050])
+DOPInputTimeline = np.column_stack((input_times, DOP_input_total))
+
+
 
 DIPNutrientInputs = DIPInputsAzov + DIPInputsNorth + DIPInputsSouth
 # Convert the NumPy array back to a DataFrame
@@ -155,6 +162,12 @@ DIPNutrientInputs = DIPNutrientInputs_df.values
 # Print the NumPy array
 print(DIPNutrientInputs)
 
+### do averages for 2030 and 2050, and add years
+DIP_input_total = np.array([ DIPNutrientInputs[0,1] , DIPNutrientInputs[1,1] , ( DIPNutrientInputs[2,1] + DIPNutrientInputs[3,1] )/2 , (DIPNutrientInputs[4,1] + DIPNutrientInputs[5,1])/2 ])
+input_times = np.array([1970 , 2000 , 2030, 2050])
+DIPInputTimeline = np.column_stack((input_times, DIP_input_total))
+
+
 
 DONNutrientInputs = DONInputsAzov + DONInputsSouth + DONInputsNorth
 # Convert the NumPy array back to a DataFrame
@@ -168,6 +181,13 @@ DONNutrientInputs = DONNutrientInputs_df.values
 
 # Print the NumPy array
 print(DONNutrientInputs)
+
+### do averages for 2030 and 2050, and add years
+DON_input_total = np.array([ DONNutrientInputs[0,1] , DONNutrientInputs[1,1] , ( DONNutrientInputs[2,1] + DONNutrientInputs[3,1] )/2 , (DONNutrientInputs[4,1] + DONNutrientInputs[5,1])/2 ])
+input_times = np.array([1970 , 2000 , 2030, 2050])
+DONInputTimeline = np.column_stack((input_times, DON_input_total))
+
+
 
 DINNutrientInputs = DINInputsAzov + DINInputsNorth + DINInputsSouth
 # Convert the NumPy array back to a DataFrame
@@ -186,7 +206,7 @@ print(DINNutrientInputs)
 ### do averages for 2030 and 2050, and add years
 DIN_input_total = np.array([ DINNutrientInputs[0,1] , DINNutrientInputs[1,1] , ( DINNutrientInputs[2,1] + DINNutrientInputs[3,1] )/2 , (DINNutrientInputs[4,1] + DINNutrientInputs[5,1])/2 ])
 input_times = np.array([1970 , 2000 , 2030, 2050])
-
+DINInputTimeline = np.column_stack((input_times, DIN_input_total))
 
 #SST data 1993-2022
 #SeaSurfaceTemp= Dataset("Temperature over Time/SST 1993-2022")
@@ -276,58 +296,62 @@ for n in np.arange(0, nsteps, 1):
         t[n+1] = t[n] + dt ;
         
 #### make a single large figure
-fig = plt.figure(figsize=(12,6))
+fig = plt.figure(figsize=(25,20))
+
 
 #### add first subplot in a 2x3 grid
 plt.subplot(10,1,1)
 plt.plot(t,Oxygen1)
-plt.xlabel('Year')
+plt.tick_params(axis='x', labelleft=False)
 plt.ylabel('Oxygen1')
 
 plt.subplot(10,1,2)
 plt.plot(t,Oxygen2)
-plt.xlabel('Year')
 plt.ylabel('Oxygen2')
+plt.tick_params(axis='x', labelleft=False)
 
 plt.subplot(10,1,3)
 plt.plot(t,Oxygen3)
-plt.xlabel('Year')
 plt.ylabel('Oxygen3')
+plt.tick_params(axis='x', labelleft=False)
 
 plt.subplot(10,1,4)
 plt.plot(t,Oxygen4)
-plt.xlabel('Year')
 plt.ylabel('Oxygen4')
+plt.tick_params(axis='x', labelleft=False)
 
 plt.subplot(10,1,5)
 plt.plot(t,Oxygen5)
-plt.xlabel('Year')
 plt.ylabel('Oxygen5')
+plt.tick_params(axis='x', labelleft=False)
 
 plt.subplot(10,1,6)
 plt.plot(t,Oxygen6)
-plt.xlabel('Year')
 plt.ylabel('Oxygen6')
+plt.tick_params(axis='x', labelleft=False)
 
 plt.subplot(10,1,7)
 plt.plot(t,Oxygen7)
-plt.xlabel('Year')
 plt.ylabel('Oxygen7')
+plt.tick_params(axis='x', labelleft=False)
 
 plt.subplot(10,1,8)
 plt.plot(t,Oxygen8)
-plt.xlabel('Year')
 plt.ylabel('Oxygen8')
+plt.tick_params(axis='x', labelleft=False)
 
 plt.subplot(10,1,9)
 plt.plot(t,Oxygen9)
-plt.xlabel('Year')
 plt.ylabel('Oxygen9')
+plt.tick_params(axis='x', labelleft=False)
 
 plt.subplot(10,1,10)
 plt.plot(t,Oxygen10)
+plt.ylabel('Oxygen10')
 plt.xlabel('Year')
-plt.ylabel('Oxygen10')       
+
+plt.subplots_adjust(wspace=0.5, hspace=1)
+  
 
         
 
