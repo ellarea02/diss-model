@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from netCDF4 import Dataset
-import matplotlib.gridspec as gridspec
+
 
 
 
@@ -23,9 +23,9 @@ dt = 0.1 ;
 t[0] = 1950
 
 #### Set depth of each layer (100m)
-d = np.empty(nsteps)
-dz = 100
-d[0] = 0
+dz = 20
+# Depths of each layer
+depths = np.arange(0, 240, dz)  # Adjusted for all layers
 
 #### Make an empty array to hold the model results 
 Oxygen1 = np.empty(nsteps) 
@@ -38,6 +38,8 @@ Oxygen7 = np.empty(nsteps)
 Oxygen8 = np.empty(nsteps)
 Oxygen9 = np.empty(nsteps)
 Oxygen10 = np.empty(nsteps)
+Oxygen11 = np.empty(nsteps)
+Oxygen12 = np.empty(nsteps)
 
 #Mean oxygen data 1955-2021
 #units: days since 1950-01-01
@@ -218,17 +220,32 @@ t = np.empty(nsteps)
 maxoxygendepth = np.empty(nsteps)
 
 
-### set initial oxygen concentration
-Oxygen1[0] = 100 ;
-Oxygen2[0] = 100 ;
-Oxygen3[0] = 100 ;
-Oxygen4[0] = 100 ;
-Oxygen5[0] = 100 ;
-Oxygen6[0] = 100 ;
-Oxygen7[0] = 100 ;
-Oxygen8[0] = 100 ;
-Oxygen9[0] = 100 ;
-Oxygen10[0] = 100 ;
+### set initial oxygen mol
+#Oxygen1 = 0-20m
+Oxygen1[0] = 2533333333200.00 ;
+#Oxygen2 = 20-40m
+Oxygen2[0] = 2523913157600.00 ;
+#Oxygen3 = 40-60m
+Oxygen3[0] = 2390621878800.00 ;
+#Oxygen4 = 60-80m
+Oxygen4[0] = 1876044788000.00 ;
+#Oxygen5 = 80-100m
+Oxygen5[0] = 919139988400.00 ;
+#Oxygen6 = 100-120m
+Oxygen6[0] = 239857015200.00 ;
+#Oxygen7 = 120-140m
+Oxygen7[0] = 104862534840.00 ;
+#Oxygen8 = 140-160m
+Oxygen8[0] = 53198759396.00 ;
+#Oxygen9 = 160-180m
+Oxygen9[0] = 17221258480.00 ;
+#Oxygen10 = 180-200m
+Oxygen10[0] = 1577038324.00 ;
+#Oxygen11 = 200-1200m
+Oxygen11[0] = 0;
+#Oxygen12 = 1200-2200m
+Oxygen12[0] = 0 ;
+
 
 for n in np.arange(0, nsteps, 1):
     # Calculate oxygen model parameters and processes at this timestep AND DEPTH OF EACH LAYER (dz)
@@ -237,7 +254,7 @@ for n in np.arange(0, nsteps, 1):
     
 
     #### Calculate Oxygen model parameters and processes at this timestep
-    Airsea = 1 ;
+    Airsea = 1 ; 
     Down_1 = 1 * ( Oxygen1[n]/Oxygen1[0] ) ; 
     Down_2 = 1 * ( Oxygen2[n]/Oxygen2[0] ) ;
     Down_3 = 1 * ( Oxygen3[n]/Oxygen3[0] ) ;
@@ -247,6 +264,9 @@ for n in np.arange(0, nsteps, 1):
     Down_7 = 1 * ( Oxygen7[n]/Oxygen7[0] ) ;
     Down_8 = 1 * ( Oxygen8[n]/Oxygen8[0] ) ;
     Down_9 = 1 * ( Oxygen9[n]/Oxygen9[0] ) ;
+    Down_9 = 1 * ( Oxygen9[n]/Oxygen9[0] ) ;
+    Down_10 = 1 * ( Oxygen10[n]/Oxygen10[0] ) ;
+    Down_11 = 1 * ( Oxygen11[n]/Oxygen11[0] ) ;
 
     Up_2 = 1 * ( Oxygen2[n]/Oxygen2[0] ) ;
     Up_3 = 1 * ( Oxygen3[n]/Oxygen3[0] ) ;
@@ -257,13 +277,15 @@ for n in np.arange(0, nsteps, 1):
     Up_8 = 1 * ( Oxygen8[n]/Oxygen8[0] ) ;
     Up_9 = 1 * ( Oxygen9[n]/Oxygen9[0] ) ;
     Up_10 = 1 * ( Oxygen10[n]/Oxygen10[0] ) ;
+    Up_11 = 1 * ( Oxygen11[n]/Oxygen11[0] ) ;
+    Up_12 = 1 * ( Oxygen12[n]/Oxygen12[0] ) ;
 
 
     # Update the model reservoirs by adding and subtracting sources and sinks
     #### We multiply by dt because each source or sink process is defined in Gt of carbon per year
     #### On the final model step (n = steps) we do not calculate the future reservoir sizes, hence the 'if' statement
     k_resp = 0.1 ;
-    Resp_1 = k_resp ;
+    Resp_1 = k_resp ; # * nutrient input
     Resp_2 = k_resp ;
     Resp_3 = k_resp ;
     Resp_4 = k_resp ;
@@ -273,6 +295,8 @@ for n in np.arange(0, nsteps, 1):
     Resp_8 = k_resp ;
     Resp_9 = k_resp ;
     Resp_10 = k_resp ;
+    Resp_11 = k_resp ;
+    Resp_12 = k_resp ;
 
     
     # Accounting for respiration
@@ -290,7 +314,9 @@ for n in np.arange(0, nsteps, 1):
         Oxygen7[n+1] = Oxygen7[n] + ( Down_6 - Down_7 - Up_7 + Up_8 - Resp_7) * dt
         Oxygen8[n+1] = Oxygen8[n] + ( Down_7 - Down_8 - Up_8 + Up_9 - Resp_8) * dt
         Oxygen9[n+1] = Oxygen9[n] + ( Down_8 - Down_9 - Up_9 + Up_10 - Resp_9) * dt
-        Oxygen10[n+1] = Oxygen10[n] + ( Down_9 - Up_10 - Resp_10) * dt
+        Oxygen10[n+1] = Oxygen10[n] + ( Down_9 - Up_10 + Up_11 - Down_10 - Resp_10) * dt
+        Oxygen11[n+1] = Oxygen11[n] + ( Down_10 - Up_11 + Up_12 - Down_11 - Resp_11) * dt
+        Oxygen12[n+1] = Oxygen10[n] + ( Down_11 - Up_12 - Resp_12) * dt
                 
         #### Update model time         
         t[n+1] = t[n] + dt ;
@@ -300,73 +326,95 @@ fig = plt.figure(figsize=(25,20))
 
 
 #### add first subplot in a 2x3 grid
-plt.subplot(10,1,1)
+plt.subplot(12,1,1)
 plt.plot(t,Oxygen1)
 plt.tick_params(axis='x', labelleft=False)
 plt.ylabel('Oxygen1')
 
-plt.subplot(10,1,2)
+plt.subplot(12,1,2)
 plt.plot(t,Oxygen2)
 plt.ylabel('Oxygen2')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(10,1,3)
+plt.subplot(12,1,3)
 plt.plot(t,Oxygen3)
 plt.ylabel('Oxygen3')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(10,1,4)
+plt.subplot(12,1,4)
 plt.plot(t,Oxygen4)
 plt.ylabel('Oxygen4')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(10,1,5)
+plt.subplot(12,1,5)
 plt.plot(t,Oxygen5)
 plt.ylabel('Oxygen5')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(10,1,6)
+plt.subplot(12,1,6)
 plt.plot(t,Oxygen6)
 plt.ylabel('Oxygen6')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(10,1,7)
+plt.subplot(12,1,7)
 plt.plot(t,Oxygen7)
 plt.ylabel('Oxygen7')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(10,1,8)
+plt.subplot(12,1,8)
 plt.plot(t,Oxygen8)
 plt.ylabel('Oxygen8')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(10,1,9)
+plt.subplot(12,1,9)
 plt.plot(t,Oxygen9)
 plt.ylabel('Oxygen9')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(10,1,10)
+plt.subplot(12,1,10)
 plt.plot(t,Oxygen10)
 plt.ylabel('Oxygen10')
 plt.xlabel('Year')
 
-plt.subplots_adjust(wspace=0.5, hspace=1)
-  
 
+plt.subplot(12, 1, 11)
+plt.plot(t,Oxygen11)
+plt.ylabel('Oxygen11')
+plt.xlabel('Year')
+
+plt.subplot(12, 1, 12)
+plt.plot(t,Oxygen12)
+plt.ylabel('Oxygen12')
+plt.xlabel('Year')
+
+plt.subplots_adjust(wspace=0.5, hspace=1)
+# Adjust the spacing between the subplots
+fig.tight_layout()
+
+
+oxygen_depth_profile = np.array([Oxygen1[0], Oxygen2[0], Oxygen3[0], Oxygen4[0], Oxygen5[0], Oxygen6[0],
+                                 Oxygen7[0], Oxygen8[0], Oxygen9[0], Oxygen10[0], Oxygen11[0], Oxygen12[0]])
+
+plt.figure(figsize=(8, 6))
+plt.plot(oxygen_depth_profile, depths, marker='o', linestyle='-')
+plt.title('Oxygen Depth Profile')
+plt.xlabel('Oxygen Inventory (mol)')
+plt.ylabel('Depth (m)')
+plt.grid(True)
+plt.gca().invert_yaxis()  # Invert y-axis to represent deeper depths at the bottom
+plt.show()
+
+  
+threshold = 0.00002
+
+# Find the index where oxygen concentration drops below the threshold
+index_below_threshold = np.argmax(oxygen_depth_profile < threshold)
+
+# Depth where oxygen concentration first drops below the threshold
+oxygen_penetration_depth = depths[index_below_threshold]
+
+print(f"The depth at which oxygen concentration drops below {threshold} is approximately {oxygen_penetration_depth} meters.")
         
 
     # Update the maximum oxygen depth
-# maxoxygendepth[n] = 0 
- #for i in range(10):
-        #if OxygenConc[i][n] > 0.00002:  # threshold value
-            #maxoxygendepth[n] = i * dz  # dz is the depth of each layer
-            #break
-        
-
-
-#### add first subplot in a 2x3 grid
-# plt.plot(t, maxoxygendepth)
-# plt.xlabel('Year')
-# plt.ylabel('Oxygen')        
-        
-        
+# ma
