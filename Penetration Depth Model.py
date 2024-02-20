@@ -15,12 +15,9 @@ from netCDF4 import Dataset
 
 
 #### Set number of model steps
-nsteps = 10000 ;
+nsteps = 5000 ;
 
 #### Set timestep size (dt, in years)
-t = np.empty(nsteps)
-dt = 0.1 ;
-t[0] = 1950
 
 #### Set depth of each layer (100m)
 dz = 20
@@ -29,7 +26,8 @@ dz = 20
 #depths = np.arange (0, 220, dz)
 
 #full basin profile
-depths = np.array([10,30,50,70,90,110,130,150,170,190,700,1700])  # Adjusted for all layers
+depths200m = np.array([10,30,50,70,90,110,130,150,170,190])
+depths = np.array([10,30,50,70,90,110,130,150,170,190,700,1700])  # Adjusted for all layers (m)
 volumes = 1e6 * np.array([8e3,8e3,8e3,8e3,8e3,8e3,8e3,8e3,8e3,8e3,20e3,20e3])  # in m3
 
 #### Make an empty array to hold the model results 
@@ -229,55 +227,65 @@ input_times = np.array([1970 , 2000 , 2030, 2050])
 DINInputTimeline = np.column_stack((input_times, DIN_input_total))
 
 #TOTAL NITROGEN INPUT (DON + DIN) - TO BE USED IN MODEL AS IS THE LIMITING NUTRIENT IN RESPIRATION
-inputs1970= DIN_input_total[0] + DON_input_total[0]
-inputs2000= DIN_input_total[1] + DON_input_total[1]
-inputs2030= DIN_input_total[2]+ DON_input_total[2]
-inputs2050= DIN_input_total[3]+ DON_input_total[3]
-total_nutrient_input_kT = np.array([ inputs1970 , inputs2000 , inputs2030, inputs2050 ])
-total_nutrient_input = total_nutrient_input_kT * 3.6e7
-nutrient_input_timeline = np.column_stack((input_times, total_nutrient_input))
+inputs1970= (DIN_input_total[0] + DON_input_total[0])* 3.6e7 #mol
+inputs2000= (DIN_input_total[1] + DON_input_total[1])* 3.6e7 #mol
+inputs2030= (DIN_input_total[2]+ DON_input_total[2])* 3.6e7 #mol
+inputs2050= (DIN_input_total[3]+ DON_input_total[3])* 3.6e7 #mol
+total_nutrient_input_kT = np.array([ inputs1970/3.6e7  , inputs2000/3.6e7  , inputs2030/3.6e7 , inputs2050/3.6e7  ])
+total_nutrient_input = total_nutrient_input_kT * 3.6e7 #mol
+nutrient_input_timeline = np.column_stack((input_times, total_nutrient_input)) #mol / year
+# Create a figure and axis
+fig, ax = plt.subplots()
 
-
+# Plot the lines
+ax.plot(input_times, total_nutrient_input, label='Total Nitrogen Input')
+ax.plot(input_times, DINInputTimeline, label=' Total DIN Input')
+ax.plot(input_times, DONInputTimeline, label='Total DON Input')
+ax.legend()
 
 #SST data 1993-2022
 #SeaSurfaceTemp= Dataset("Temperature over Time/SST 1993-2022")
 #print(SeaSurfaceTemp)
 
+#### Set timestep size (dt, in years) 1950-2050
 t = np.empty(nsteps)
+dt = 0.02 ;
+t[0] = 1950
 # Model of oxygen penetration depth over time
 
 #maxoxygendepth = np.empty(nsteps)
 
 ### set initial oxygen mol
+#Oxygen conc: mol/m3
 #Oxygen1 = 0-20m
-Oxygen1[0] = 2.53333E+9 ;
+Oxygen1[0] = 2.58828E+15 ; #mol
 OxygenConc1[0] = Oxygen1[0] / volumes[0] ;
 #Oxygen2 = 20-40m
-Oxygen2[0] = 2.52391E+9 ;
+Oxygen2[0] = 2.5114E+15 ;
 OxygenConc2[0] = Oxygen2[0] / volumes[0] ;
 #Oxygen3 = 40-60m
-Oxygen3[0] = 2.39062E+9 ;
+Oxygen3[0] = 2.29339E+15 ;
 OxygenConc3[0] = Oxygen3[0] / volumes[0] ;
 #Oxygen4 = 60-80m
-Oxygen4[0] = 1.87604E+9 ;
+Oxygen4[0] = 1.98118E+15 ;
 OxygenConc4[0] = Oxygen4[0] / volumes[0] ;
 #Oxygen5 = 80-100m
-Oxygen5[0] = 9.1914E+8 ;
+Oxygen5[0] = 7.43563E+14 ;
 OxygenConc5[0] = Oxygen5[0] / volumes[0] ;
 #Oxygen6 = 100-120m
-Oxygen6[0] = 2.39857E+8 ;
+Oxygen6[0] = 1.64769E+14 ;
 OxygenConc6[0] = Oxygen6[0] / volumes[0] ;
 #Oxygen7 = 120-140m
-Oxygen7[0] = 1.04863E+8 ;
+Oxygen7[0] = 5.65211E+13 ;
 OxygenConc7[0] = Oxygen7[0] / volumes[0] ;
 #Oxygen8 = 140-160m
-Oxygen8[0] = 5.32E+7 ;
+Oxygen8[0] = 4.23908E+13 ;
 OxygenConc8[0] = Oxygen8[0] / volumes[0] ;
 #Oxygen9 = 160-180m
-Oxygen9[0] = 1.72E+7 ;
+Oxygen9[0] = 0 ;
 OxygenConc9[0] = Oxygen9[0] / volumes[0] ;
 #Oxygen10 = 180-200m
-Oxygen10[0] = 1.58E+6 ;
+Oxygen10[0] = 0 ;
 OxygenConc10[0] = Oxygen10[0] / volumes[0] ;
 #Oxygen11 = 200-1200m
 Oxygen11[0] = 0;
@@ -292,61 +300,75 @@ for n in np.arange(0, nsteps, 1):
     ##NEED EQUATION FOR RESPIRATION
     
     
-    OxygenConc1[n]=( Oxygen1[n]/volumes[0] )
-    OxygenConc2[n]=( Oxygen1[n]/volumes[1] )
-    OxygenConc3[n]=( Oxygen1[n]/volumes[2] )
-    OxygenConc4[n]=( Oxygen1[n]/volumes[3] )
-    OxygenConc5[n]=( Oxygen1[n]/volumes[4] )
-    OxygenConc6[n]=( Oxygen1[n]/volumes[5] )
-    OxygenConc7[n]=( Oxygen1[n]/volumes[6] )
-    OxygenConc8[n]=( Oxygen1[n]/volumes[7] )
-    OxygenConc9[n]=( Oxygen1[n]/volumes[8] )
-    OxygenConc10[n]=( Oxygen1[n]/volumes[9] )
-    OxygenConc11[n]=( Oxygen1[n]/volumes[10] )
-    OxygenConc12[n]=( Oxygen1[n]/volumes[11] )
+    OxygenConc1[n]=( Oxygen1[n]/volumes[0] ) #mol/m3
+    OxygenConc2[n]=( Oxygen2[n]/volumes[1] )
+    OxygenConc3[n]=( Oxygen3[n]/volumes[2] )
+    OxygenConc4[n]=( Oxygen4[n]/volumes[3] )
+    OxygenConc5[n]=( Oxygen5[n]/volumes[4] )
+    OxygenConc6[n]=( Oxygen6[n]/volumes[5] )
+    OxygenConc7[n]=( Oxygen7[n]/volumes[6] )
+    OxygenConc8[n]=( Oxygen8[n]/volumes[7] )
+    OxygenConc9[n]=( Oxygen9[n]/volumes[8] )
+    OxygenConc10[n]=( Oxygen10[n]/volumes[9] )
+    OxygenConc11[n]=( Oxygen11[n]/volumes[10] )
+    OxygenConc12[n]=( Oxygen12[n]/volumes[11] )
 
     
   #  mols of oxygen moved per year
-# box 1 =  3.74868E-05
-#box 2 = 1.49823E-05
-#box 3 = 8.66751E-06
-#box 4 = 6.12917E-06
-#box 5 = 8.85324E-06
-#box 6 = 1.219E-05
-#box 7 = 2.39613E-05
-#box 8 = 0.000151842
-#box 9 = 0.000532795
-#box 10 = 0.002537704
+# box 1 =  0.037487015
+#box 2 = 0.014982349
+#box 3 = 0.008667563
+#box 4 = 0.006129205
+#box 5 = 0.008853297
+#box 6 = 0.012190083
+#box 7 = 0.023961459
+#box 8 = 0.151842974
+#box 9 = 0.532798047
+#box 10 = 2.537720471
 #box 11 = 0
 #box 12 = 0
 
-    #### Calculate Oxygen model parameters and processes at this timestep = wateer flux (m3) * concentraiton (mol/m3)
-    #Airsea = 4.72345E+12 ; 
-    Airsea = 1e6
-    Down_1 = 1 * OxygenConc1[n] ; 
-    Down_2 = 1 * OxygenConc2[n] ;
-    Down_3 = 1 * OxygenConc3[n] ;
-    Down_4 = 1 * OxygenConc4[n] ;
-    Down_5 = 1 * OxygenConc5[n] ;
-    Down_6 = 1 * OxygenConc6[n] ;
-    Down_7 = 1 * OxygenConc7[n] ;
-    Down_8 = 1 * OxygenConc8[n] ;
-    Down_9 = 1 * OxygenConc9[n] ;
-    Down_9 = 1 * OxygenConc10[n] ;
-    Down_10 = 1 * OxygenConc11[n];
-    Down_11 = 1 * OxygenConc12[n];
+#m3 of water moved via advection per year
+# box 1 = 6.25E+04
+# box 2 = 4.41E+04
+# box 3 = 3.10E+04
+# box 4 = 1.86E+04
+# box 5 = 1.70E+04
+# box 6 = 2.24E+04
+# box 7 = 3.00E+04
+# box 8 = 3.91E+04
+# box 9 = 4.82E+04
+# box 10 = 5.73E+04
+# box 11= 9.72E+06
+# box 12= 6.42E+06
 
-    Up_2 = 1 * OxygenConc2[n] ;
-    Up_3 = 1 * OxygenConc3[n] ;
-    Up_4 = 1 * OxygenConc4[n] ;
-    Up_5 = 1 * OxygenConc5[n] ;
-    Up_6 = 1 * OxygenConc6[n] ;
-    Up_7 = 1 * OxygenConc7[n] ;
-    Up_8 = 1 * OxygenConc8[n] ;
-    Up_9 = 1 * OxygenConc9[n] ;
-    Up_10 = 1 * OxygenConc10[n] ;
-    Up_11 = 1 * OxygenConc11[n] ;
-    Up_12 = 1 * OxygenConc12[n] ;
+    #### Calculate Oxygen model parameters and processes at this timestep = water flux (m3) * concentraiton (mol/m3)
+    #Airsea = 4.72345E+12 ; 
+    Airsea = 6.546E+11
+    Down_1 = 6.25E+04 * OxygenConc1[n] ; 
+    Down_2 = 4.41E+04 * OxygenConc2[n] ;
+    Down_3 = 3.10E+04 * OxygenConc3[n] ;
+    Down_4 = 1.86E+04 * OxygenConc4[n] ;
+    Down_5 = 1.70E+04 * OxygenConc5[n] ;
+    Down_6 = 2.24E+04 * OxygenConc6[n] ;
+    Down_7 = 3.00E+04 * OxygenConc7[n] ;
+    Down_8 = 3.91E+04 * OxygenConc8[n] ;
+    Down_9 = 4.82E+04 * OxygenConc9[n] ;
+    Down_10 = 5.73E+04 * OxygenConc10[n] ;
+    Down_11 = 9.72E+06 * OxygenConc11[n];
+   
+
+    Up_2 = 4.41E+04 * OxygenConc2[n] ;
+    Up_3 = 3.10E+04 * OxygenConc3[n] ;
+    Up_4 = 1.86E+04 * OxygenConc4[n] ;
+    Up_5 = 1.70E+04 * OxygenConc5[n] ;
+    Up_6 = 2.24E+04 * OxygenConc6[n] ;
+    Up_7 = 3.00E+04 * OxygenConc7[n] ;
+    Up_8 = 3.91E+04 * OxygenConc8[n] ;
+    Up_9 = 4.82E+04 * OxygenConc9[n] ;
+    Up_10 = 5.73E+04 * OxygenConc10[n] ;
+    Up_11 = 9.72E+06 * OxygenConc11[n] ;
+    Up_12 = 6.42E+06 * OxygenConc12[n] ;
     
     #Down_1 = 1 * ( Oxygen1[n]/Oxygen1[0] ) ; 
     #Down_2 = 1 * ( Oxygen2[n]/Oxygen2[0] ) ;
@@ -378,18 +400,18 @@ for n in np.arange(0, nsteps, 1):
     #### We multiply by dt because each source or sink process is defined in Gt of carbon per year
     #### On the final model step (n = steps) we do not calculate the future reservoir sizes, hence the 'if' statement
     k_resp = 1/12 ;
-    Resp_1 = k_resp * inputs1970 ; # * nutrient input of each year (currently 1970)
-    Resp_2 = k_resp * inputs1970;
-    Resp_3 = k_resp * inputs1970;
-    Resp_4 = k_resp * inputs1970;
-    Resp_5 = k_resp * inputs1970;
-    Resp_6 = k_resp * inputs1970;
-    Resp_7 = k_resp * inputs1970;
-    Resp_8 = k_resp * inputs1970;
-    Resp_9 = k_resp * inputs1970;
-    Resp_10 = k_resp * inputs1970;
-    Resp_11 = k_resp * inputs1970;
-    Resp_12 = k_resp* inputs1970 ;
+    Resp_1 = k_resp * inputs2050 ; # * nutrient input of each year (currently 1970)
+    Resp_2 = k_resp * inputs2050;
+    Resp_3 = k_resp * inputs2050;
+    Resp_4 = k_resp * inputs2050;
+    Resp_5 = k_resp * inputs2050;
+    Resp_6 = k_resp * inputs2050;
+    Resp_7 = k_resp * inputs2050;
+    Resp_8 = k_resp * inputs2050;
+    Resp_9 = k_resp * inputs2050;
+    Resp_10 = k_resp * inputs2050;
+    Resp_11 = k_resp * inputs2050
+    Resp_12 = k_resp* inputs2050 ;
 
     
     # Accounting for respiration
@@ -532,7 +554,6 @@ plt.plot(t,Oxygen10)
 plt.ylabel('Oxygen10')
 plt.xlabel('Year')
 
-
 plt.subplot(12, 1, 11)
 plt.plot(t,Oxygen11)
 plt.ylabel('Oxygen11')
@@ -543,18 +564,20 @@ plt.plot(t,Oxygen12)
 plt.ylabel('Oxygen12')
 plt.xlabel('Year')
 
-plt.subplots_adjust(wspace=0.5, hspace=1)
 # Adjust the spacing between the subplots
+plt.subplots_adjust(wspace=0.5, hspace=1)
 fig.tight_layout()
 
 
 oxygen_depth_profile = np.array([OxygenConc1[nsteps-1], OxygenConc2[nsteps-1], OxygenConc3[nsteps-1], OxygenConc4[nsteps-1], OxygenConc5[nsteps-1], OxygenConc6[nsteps-1],
                                  OxygenConc7[nsteps-1], OxygenConc8[nsteps-1], OxygenConc9[nsteps-1], OxygenConc10[nsteps-1], OxygenConc11[nsteps-1], OxygenConc12[nsteps-1]])
+oxygen_depth_profile_200m = np.array([OxygenConc1[nsteps-1], OxygenConc2[nsteps-1], OxygenConc3[nsteps-1], OxygenConc4[nsteps-1], OxygenConc5[nsteps-1], OxygenConc6[nsteps-1],
+                                 OxygenConc7[nsteps-1], OxygenConc8[nsteps-1], OxygenConc9[nsteps-1], OxygenConc10[nsteps-1]])
 
 plt.figure(figsize=(8, 6))
-plt.plot(oxygen_depth_profile, depths, marker='o', linestyle='-')
+plt.plot(oxygen_depth_profile_200m, depths200m, marker='o', linestyle='-')
 plt.title('Oxygen Depth Profile')
-plt.xlabel('Oxygen Inventory (mol)')
+plt.xlabel('Oxygen Concentration (mol/m3)')
 plt.ylabel('Depth (m)')
 plt.grid(True)
 plt.gca().invert_yaxis()  # Invert y-axis to represent deeper depths at the bottom
