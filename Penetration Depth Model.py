@@ -275,6 +275,20 @@ for n in np.arange(0, nsteps, 1):
     OxygenConc10=( Oxygen10[n]-Oxygen10[0] )
     OxygenConc11=( Oxygen11[n]-Oxygen11[0] )
     OxygenConc12=( Oxygen12[n]-Oxygen12[0] )
+    
+  #  mols of oxygen moved per year
+# box 1 =  3.74868E-05
+#box 2 = 1.49823E-05
+#box 3 = 8.66751E-06
+#box 4 = 6.12917E-06
+#box 5 = 8.85324E-06
+#box 6 = 1.219E-05
+#box 7 = 2.39613E-05
+#box 8 = 0.000151842
+#box 9 = 0.000532795
+#box 10 = 0.002537704
+#box 11 = 0
+#box 12 = 0
 
     #### Calculate Oxygen model parameters and processes at this timestep
     Airsea = 4.72345E+12 ; 
