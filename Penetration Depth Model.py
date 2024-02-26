@@ -15,7 +15,7 @@ from netCDF4 import Dataset
 
 
 #### Set number of model steps
-nsteps = 5000 ;
+nsteps = 20000 ;
 
 #### Set timestep size (dt, in years)
 
@@ -274,7 +274,7 @@ ax.set_title('Phosphorus Inputs from 1970-2050')
 
 #### Set timestep size (dt, in years) 1950-2050
 t = np.empty(nsteps)
-dt = 0.02 ;
+dt = 1e-5 ;
 t[0] = 1950
 # Model of oxygen penetration depth over time
 
@@ -283,40 +283,40 @@ t[0] = 1950
 ### set initial oxygen mol
 #Oxygen conc: mol/m3
 #Oxygen1 = 0-20m
-Oxygen1[0] = 2.58828E+15 ; #mol
+Oxygen1[0] = 2.58828E+9 ; #mol
 OxygenConc1[0] = Oxygen1[0] / volumes[0] ;
 #Oxygen2 = 20-40m
-Oxygen2[0] = 2.5114E+15 ;
+Oxygen2[0] = 2.5114E+9 ;
 OxygenConc2[0] = Oxygen2[0] / volumes[0] ;
 #Oxygen3 = 40-60m
-Oxygen3[0] = 2.29339E+15 ;
+Oxygen3[0] = 2.29339E+9 ;
 OxygenConc3[0] = Oxygen3[0] / volumes[0] ;
 #Oxygen4 = 60-80m
-Oxygen4[0] = 1.98118E+15 ;
+Oxygen4[0] = 1.98118E+9 ;
 OxygenConc4[0] = Oxygen4[0] / volumes[0] ;
 #Oxygen5 = 80-100m
-Oxygen5[0] = 7.43563E+14 ;
+Oxygen5[0] = 7.43563E+8 ;
 OxygenConc5[0] = Oxygen5[0] / volumes[0] ;
 #Oxygen6 = 100-120m
-Oxygen6[0] = 1.64769E+14 ;
+Oxygen6[0] = 1.64769E+8 ;
 OxygenConc6[0] = Oxygen6[0] / volumes[0] ;
 #Oxygen7 = 120-140m
-Oxygen7[0] = 5.65211E+13 ;
+Oxygen7[0] = 5.65211E+7 ;
 OxygenConc7[0] = Oxygen7[0] / volumes[0] ;
 #Oxygen8 = 140-160m
-Oxygen8[0] = 4.23908E+13 ;
+Oxygen8[0] = 4.23908E+7 ;
 OxygenConc8[0] = Oxygen8[0] / volumes[0] ;
 #Oxygen9 = 160-180m
-Oxygen9[0] = 0 ;
+Oxygen9[0] = 1e4 ;
 OxygenConc9[0] = Oxygen9[0] / volumes[0] ;
 #Oxygen10 = 180-200m
-Oxygen10[0] = 0 ;
+Oxygen10[0] = 1e4 ;
 OxygenConc10[0] = Oxygen10[0] / volumes[0] ;
 #Oxygen11 = 200-1200m
-Oxygen11[0] = 0;
+Oxygen11[0] = 1e4;
 OxygenConc11[0] = Oxygen11[0] / volumes[0] ;
 #Oxygen12 = 1200-2200m
-Oxygen12[0] = 0 ;
+Oxygen12[0] = 1e4 ;
 OxygenConc12[0] = Oxygen12[0] / volumes[0] ;
 
     # Update the maximum oxygen depth
@@ -372,31 +372,33 @@ for n in np.arange(0, nsteps, 1):
 
     #### Calculate Oxygen model parameters and processes at this timestep = water flux (m3) * concentraiton (mol/m3)
     #Airsea = 4.72345E+12 ; 
-    Airsea = 6.546E+11
-    Down_1 = 6.25E+04 * OxygenConc1[n] ; 
-    Down_2 = 4.41E+04 * OxygenConc2[n] ;
-    Down_3 = 3.10E+04 * OxygenConc3[n] ;
-    Down_4 = 1.86E+04 * OxygenConc4[n] ;
-    Down_5 = 1.70E+04 * OxygenConc5[n] ;
-    Down_6 = 2.24E+04 * OxygenConc6[n] ;
-    Down_7 = 3.00E+04 * OxygenConc7[n] ;
-    Down_8 = 3.91E+04 * OxygenConc8[n] ;
-    Down_9 = 4.82E+04 * OxygenConc9[n] ;
-    Down_10 = 5.73E+04 * OxygenConc10[n] ;
-    Down_11 = 9.72E+06 * OxygenConc11[n];
+    circ = 1;
+    
+    Airsea = 4.3E+11
+    Down_1 = 6.25E+12 * OxygenConc1[n] * circ ; 
+    Down_2 = 4.41E+12 * OxygenConc2[n] * circ;
+    Down_3 = 3.10E+12 * OxygenConc3[n] * circ;
+    Down_4 = 1.86E+12 * OxygenConc4[n] * circ;
+    Down_5 = 1.70E+12 * OxygenConc5[n] * circ;
+    Down_6 = 2.24E+12 * OxygenConc6[n] * circ;
+    Down_7 = 3.00E+12 * OxygenConc7[n] * circ;
+    Down_8 = 3.91E+12 * OxygenConc8[n] * circ;
+    Down_9 = 4.82E+12 * OxygenConc9[n] * circ;
+    Down_10 = 5.73E+12 * OxygenConc10[n] * circ;
+    Down_11 = 9.72E+14 * OxygenConc11[n] * circ;
    
 
-    Up_2 = 4.41E+04 * OxygenConc2[n] ;
-    Up_3 = 3.10E+04 * OxygenConc3[n] ;
-    Up_4 = 1.86E+04 * OxygenConc4[n] ;
-    Up_5 = 1.70E+04 * OxygenConc5[n] ;
-    Up_6 = 2.24E+04 * OxygenConc6[n] ;
-    Up_7 = 3.00E+04 * OxygenConc7[n] ;
-    Up_8 = 3.91E+04 * OxygenConc8[n] ;
-    Up_9 = 4.82E+04 * OxygenConc9[n] ;
-    Up_10 = 5.73E+04 * OxygenConc10[n] ;
-    Up_11 = 9.72E+06 * OxygenConc11[n] ;
-    Up_12 = 6.42E+06 * OxygenConc12[n] ;
+    Up_2 = 4.41E+12 * OxygenConc2[n] * circ;
+    Up_3 = 3.10E+12 * OxygenConc3[n] * circ;
+    Up_4 = 1.86E+12 * OxygenConc4[n] * circ;
+    Up_5 = 1.70E+12 * OxygenConc5[n] * circ;
+    Up_6 = 2.24E+12 * OxygenConc6[n] * circ;
+    Up_7 = 3.00E+12 * OxygenConc7[n] * circ;
+    Up_8 = 3.91E+12 * OxygenConc8[n] * circ;
+    Up_9 = 4.82E+12 * OxygenConc9[n] * circ;
+    Up_10 = 5.73E+12 * OxygenConc10[n] * circ;
+    Up_11 = 9.72E+14 * OxygenConc11[n] * circ;
+    Up_12 = 6.42E+14 * OxygenConc12[n] * circ;
     
     #Down_1 = 1 * ( Oxygen1[n]/Oxygen1[0] ) ; 
     #Down_2 = 1 * ( Oxygen2[n]/Oxygen2[0] ) ;
@@ -428,19 +430,19 @@ for n in np.arange(0, nsteps, 1):
     #### We multiply by dt because each source or sink process is defined in Gt of carbon per year
     #### On the final model step (n = steps) we do not calculate the future reservoir sizes, hence the 'if' statement
     #does this not need to be multiplied by oxygen concentration to give the mols of oxygen leaving
-    k_resp = 1/10 ;
-    Resp_1 = k_resp * inputs2000 ; # * nutrient input of each year (currently 2000)
-    Resp_2 = k_resp * inputs2000;
-    Resp_3 = k_resp * inputs2000;
-    Resp_4 = k_resp * inputs2000;
-    Resp_5 = k_resp * inputs2000;
-    Resp_6 = k_resp * inputs2000;
-    Resp_7 = k_resp * inputs2000;
-    Resp_8 = k_resp * inputs2000;
-    Resp_9 = k_resp * inputs2000;
-    Resp_10 = k_resp * inputs2000;
-    Resp_11 = k_resp * inputs2000
-    Resp_12 = k_resp* inputs2000 ;
+    k_resp = 0.75 ;
+    Resp_1 = k_resp * inputs2000 *106/16 * (1 / (1 + np.exp(-( 3 + np.log10(OxygenConc1[n]) ))))  ; # * nutrient input of each year (currently 2000)
+    Resp_2 = k_resp * inputs2000 *106/16 * (1 / (1 + np.exp(-( 3 + np.log10(OxygenConc2[n]) ))));
+    Resp_3 = k_resp * inputs2000 *106/16 * (1 / (1 + np.exp(-( 3 + np.log10(OxygenConc3[n]) ))));
+    Resp_4 = k_resp * inputs2000 *106/16 * (1 / (1 + np.exp(-( 3 + np.log10(OxygenConc4[n]) ))));
+    Resp_5 = k_resp * inputs2000 *106/16 * (1 / (1 + np.exp(-( 3 + np.log10(OxygenConc5[n]) ))));
+    Resp_6 = k_resp * inputs2000 *106/16 * (1 / (1 + np.exp(-( 3 + np.log10(OxygenConc6[n]) ))));
+    Resp_7 = k_resp * inputs2000 *106/16 * (1 / (1 + np.exp(-( 3 + np.log10(OxygenConc7[n]) ))));
+    Resp_8 = k_resp * inputs2000 *106/16 * (1 / (1 + np.exp(-( 3 + np.log10(OxygenConc8[n]) ))));
+    Resp_9 = k_resp * inputs2000 *106/16 * (1 / (1 + np.exp(-( 3 + np.log10(OxygenConc9[n]) ))));
+    Resp_10 = k_resp * inputs2000 *106/16 * (1 / (1 + np.exp(-( 3 + np.log10(OxygenConc10[n]) ))));
+    Resp_11 = k_resp * inputs2000 *106/16  * (1 / (1 + np.exp(-( 3 + np.log10(OxygenConc11[n]) ))));
+    Resp_12 = k_resp* inputs2000  *106/16  * (1 / (1 + np.exp(-( 3 + np.log10(OxygenConc12[n]) ))));
     
 
 
@@ -450,22 +452,22 @@ for n in np.arange(0, nsteps, 1):
 
 
 
-    #if n < nsteps-1:
-     #   Oxygen1[n+1] = Oxygen1[n] + ( Airsea + Up_2 - Down_1 - Resp_1 ) * dt ;
-      #  Oxygen2[n+1] = Oxygen2[n] + ( Down_1 - Down_2 - Up_2 + Up_3 - Resp_2 ) * dt ;
-       # Oxygen3[n+1] = Oxygen3[n] + ( Down_2 - Down_3 - Up_3 + Up_4 - Resp_3 ) * dt ;
-        #Oxygen4[n+1] = Oxygen4[n] + ( Down_3 - Down_4 - Up_4 + Up_5 - Resp_4 ) * dt
-        #Oxygen5[n+1] = Oxygen5[n] + ( Down_4 - Down_5 - Up_5 + Up_6 - Resp_5 ) * dt
-        #Oxygen6[n+1] = Oxygen6[n] + ( Down_5 - Down_6 - Up_6 + Up_7 - Resp_6) * dt
-        #Oxygen7[n+1] = Oxygen7[n] + ( Down_6 - Down_7 - Up_7 + Up_8 - Resp_7) * dt
-        #Oxygen8[n+1] = Oxygen8[n] + ( Down_7 - Down_8 - Up_8 + Up_9 - Resp_8) * dt
-        #Oxygen9[n+1] = Oxygen9[n] + ( Down_8 - Down_9 - Up_9 + Up_10 - Resp_9) * dt
-        #Oxygen10[n+1] = Oxygen10[n] + ( Down_9 - Up_10 + Up_11 - Down_10 - Resp_10) * dt
-        #Oxygen11[n+1] = Oxygen11[n] + ( Down_10 - Up_11 + Up_12 - Down_11 - Resp_11) * dt
-        #Oxygen12[n+1] = Oxygen12[n] + ( Down_11 - Up_12 - Resp_12) * dt
+    # if n < nsteps-1:
+    #     Oxygen1[n+1] = Oxygen1[n] + ( Airsea + Up_2 - Down_1 - Resp_1 ) * dt ;
+    #     Oxygen2[n+1] = Oxygen2[n] + ( Down_1 - Down_2 - Up_2 + Up_3 - Resp_2 ) * dt ;
+    #     Oxygen3[n+1] = Oxygen3[n] + ( Down_2 - Down_3 - Up_3 + Up_4 - Resp_3 ) * dt ;
+    #     Oxygen4[n+1] = Oxygen4[n] + ( Down_3 - Down_4 - Up_4 + Up_5 - Resp_4 ) * dt
+    #     Oxygen5[n+1] = Oxygen5[n] + ( Down_4 - Down_5 - Up_5 + Up_6 - Resp_5 ) * dt
+    #     Oxygen6[n+1] = Oxygen6[n] + ( Down_5 - Down_6 - Up_6 + Up_7 - Resp_6) * dt
+    #     Oxygen7[n+1] = Oxygen7[n] + ( Down_6 - Down_7 - Up_7 + Up_8 - Resp_7) * dt
+    #     Oxygen8[n+1] = Oxygen8[n] + ( Down_7 - Down_8 - Up_8 + Up_9 - Resp_8) * dt
+    #     Oxygen9[n+1] = Oxygen9[n] + ( Down_8 - Down_9 - Up_9 + Up_10 - Resp_9) * dt
+    #     Oxygen10[n+1] = Oxygen10[n] + ( Down_9 - Up_10 + Up_11 - Down_10 - Resp_10) * dt
+    #     Oxygen11[n+1] = Oxygen11[n] + ( Down_10 - Up_11 + Up_12 - Down_11 - Resp_11) * dt
+    #     Oxygen12[n+1] = Oxygen12[n] + ( Down_11 - Up_12 - Resp_12) * dt
         
  
-    resp_constant = 0.00002 ;
+    resp_constant = 0.0001 ;
     if n < nsteps-1:
         if Oxygen1[n] >= resp_constant:
             Oxygen1[n+1] = Oxygen1[n] + ( Airsea + Up_2 - Down_1 - Resp_1 ) * dt ;
@@ -529,6 +531,15 @@ for n in np.arange(0, nsteps, 1):
             
         #### Update model time         
         t[n+1] = t[n] + dt ;
+        
+        
+        #### output time every 1000 steps
+        if n % 1000 == 0:
+            print(t[n])
+        
+        # #### speed up model
+        # if t[n] > 1950.2:
+        #     dt = 5e-4
                        
         
 #### make a single large figure
@@ -536,62 +547,62 @@ fig = plt.figure(figsize=(25,20))
 
 
 #### add first subplot in a 2x3 grid
-plt.subplot(12,1,1)
+plt.subplot(6,2,1)
 plt.plot(t,Oxygen1)
 plt.tick_params(axis='x', labelleft=False)
 plt.ylabel('Oxygen1')
 
-plt.subplot(12,1,2)
+plt.subplot(6,2,2)
 plt.plot(t,Oxygen2)
 plt.ylabel('Oxygen2')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(12,1,3)
+plt.subplot(6,2,3)
 plt.plot(t,Oxygen3)
 plt.ylabel('Oxygen3')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(12,1,4)
+plt.subplot(6,2,4)
 plt.plot(t,Oxygen4)
 plt.ylabel('Oxygen4')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(12,1,5)
+plt.subplot(6,2,5)
 plt.plot(t,Oxygen5)
 plt.ylabel('Oxygen5')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(12,1,6)
+plt.subplot(6,2,6)
 plt.plot(t,Oxygen6)
 plt.ylabel('Oxygen6')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(12,1,7)
+plt.subplot(6,2,7)
 plt.plot(t,Oxygen7)
 plt.ylabel('Oxygen7')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(12,1,8)
+plt.subplot(6,2,8)
 plt.plot(t,Oxygen8)
 plt.ylabel('Oxygen8')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(12,1,9)
+plt.subplot(6,2,9)
 plt.plot(t,Oxygen9)
 plt.ylabel('Oxygen9')
 plt.tick_params(axis='x', labelleft=False)
 
-plt.subplot(12,1,10)
+plt.subplot(6,2,10)
 plt.plot(t,Oxygen10)
 plt.ylabel('Oxygen10')
 plt.xlabel('Year')
 
-plt.subplot(12, 1, 11)
+plt.subplot(6,2, 11)
 plt.plot(t,Oxygen11)
 plt.ylabel('Oxygen11')
 plt.xlabel('Year')
 
-plt.subplot(12, 1, 12)
+plt.subplot(6,2, 12)
 plt.plot(t,Oxygen12)
 plt.ylabel('Oxygen12')
 plt.xlabel('Year')
@@ -628,15 +639,15 @@ print(f"The depth at which oxygen concentration drops below {threshold} is appro
         
 
 # Calculate the indices where Oxygen[i] < resp_constant for each time step
-indices = np.where(np.array([Oxygen1, Oxygen2, Oxygen3, Oxygen4, Oxygen5, Oxygen6, Oxygen7, Oxygen8, Oxygen9, Oxygen10, Oxygen11, Oxygen12]) < resp_constant)[1:] + np.arange(nsteps)[:, None]
+# indices = np.where(np.array([Oxygen1, Oxygen2, Oxygen3, Oxygen4, Oxygen5, Oxygen6, Oxygen7, Oxygen8, Oxygen9, Oxygen10, Oxygen11, Oxygen12]) < resp_constant)[1:] + np.arange(nsteps)[:, None]
 
 # Calculate the depths where oxygen drops below the respconstant
-depths_below_resp_constant = indices * 20
+# depths_below_resp_constant = indices * 20
 
 # Find the first depths where oxygen drops below the resp_constant
-first_depths_below_resp_constant = depths_below_resp_constant[np.argsort(indices[:, 0])[0]]
+# first_depths_below_resp_constant = depths_below_resp_constant[np.argsort(indices[:, 0])[0]]
 
-print("First Depths Where Oxygen Drops Below the Respiration Constant: \n", first_depths_below_resp_constant)
+# print("First Depths Where Oxygen Drops Below the Respiration Constant: \n", first_depths_below_resp_constant)
 # Convert the list to a NumPy array
 #penetration_depths = np.array(penetration_depths)
     
