@@ -234,14 +234,39 @@ inputs2050= (DIN_input_total[3]+ DON_input_total[3])* 3.6e7 #mol
 total_nutrient_input_kT = np.array([ inputs1970/3.6e7  , inputs2000/3.6e7  , inputs2030/3.6e7 , inputs2050/3.6e7  ])
 total_nutrient_input = total_nutrient_input_kT * 3.6e7 #mol
 nutrient_input_timeline = np.column_stack((input_times, total_nutrient_input)) #mol / year
-# Create a figure and axis
+
+
+# Create a Nitrogen figure and axis
 fig, ax = plt.subplots()
 
 # Plot the lines
 ax.plot(input_times, total_nutrient_input, label='Total Nitrogen Input')
-ax.plot(input_times, DINInputTimeline, label=' Total DIN Input')
-ax.plot(input_times, DONInputTimeline, label='Total DON Input')
-ax.legend()
+ax.plot(input_times, DIN_input_total*3.6e7, label=' Total DIN Input')
+ax.plot(input_times, DON_input_total*3.6e7, label='Total DON Input')
+ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+ax.set_xlabel('Years')
+ax.set_ylabel('Input (mol)')
+ax.set_title('Nitrogen Inputs from 1970-2050')
+
+#TOTAL PHOSPHORUS INPUT (DOP + DIP) 
+Pinputs1970= (DIP_input_total[0] + DOP_input_total[0])* 3.6e7 #mol
+Pinputs2000= (DIP_input_total[1] + DOP_input_total[1])* 3.6e7 #mol
+Pinputs2030= (DIP_input_total[2]+ DOP_input_total[2])* 3.6e7 #mol
+Pinputs2050= (DIP_input_total[3]+ DOP_input_total[3])* 3.6e7 #mol
+total_P_input_kT = np.array([ Pinputs1970/3.6e7  , Pinputs2000/3.6e7  , Pinputs2030/3.6e7 , Pinputs2050/3.6e7  ])
+total_P_input = total_P_input_kT * 3.6e7 #mol
+
+
+#Create a Phosphorus figure & axis
+fig, ax = plt.subplots()
+# Plot the lines
+ax.plot(input_times, total_P_input, label='Total Phosphorus Input')
+ax.plot(input_times, DIP_input_total*3.6e7, label=' Total DIP Input')
+ax.plot(input_times, DOP_input_total*3.6e7, label='Total DOP Input')
+ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+ax.set_xlabel('Years')
+ax.set_ylabel('Input (mol)')
+ax.set_title('Phosphorus Inputs from 1970-2050')
 
 #SST data 1993-2022
 #SeaSurfaceTemp= Dataset("Temperature over Time/SST 1993-2022")
@@ -293,6 +318,9 @@ OxygenConc11[0] = Oxygen11[0] / volumes[0] ;
 #Oxygen12 = 1200-2200m
 Oxygen12[0] = 0 ;
 OxygenConc12[0] = Oxygen12[0] / volumes[0] ;
+
+    # Update the maximum oxygen depth
+#penetration_depths = []
 
 
 for n in np.arange(0, nsteps, 1):
@@ -399,19 +427,22 @@ for n in np.arange(0, nsteps, 1):
     # Update the model reservoirs by adding and subtracting sources and sinks
     #### We multiply by dt because each source or sink process is defined in Gt of carbon per year
     #### On the final model step (n = steps) we do not calculate the future reservoir sizes, hence the 'if' statement
-    k_resp = 1/12 ;
-    Resp_1 = k_resp * inputs2050 ; # * nutrient input of each year (currently 1970)
-    Resp_2 = k_resp * inputs2050;
-    Resp_3 = k_resp * inputs2050;
-    Resp_4 = k_resp * inputs2050;
-    Resp_5 = k_resp * inputs2050;
-    Resp_6 = k_resp * inputs2050;
-    Resp_7 = k_resp * inputs2050;
-    Resp_8 = k_resp * inputs2050;
-    Resp_9 = k_resp * inputs2050;
-    Resp_10 = k_resp * inputs2050;
-    Resp_11 = k_resp * inputs2050
-    Resp_12 = k_resp* inputs2050 ;
+    #does this not need to be multiplied by oxygen concentration to give the mols of oxygen leaving
+    k_resp = 1/10 ;
+    Resp_1 = k_resp * inputs2000 ; # * nutrient input of each year (currently 2000)
+    Resp_2 = k_resp * inputs2000;
+    Resp_3 = k_resp * inputs2000;
+    Resp_4 = k_resp * inputs2000;
+    Resp_5 = k_resp * inputs2000;
+    Resp_6 = k_resp * inputs2000;
+    Resp_7 = k_resp * inputs2000;
+    Resp_8 = k_resp * inputs2000;
+    Resp_9 = k_resp * inputs2000;
+    Resp_10 = k_resp * inputs2000;
+    Resp_11 = k_resp * inputs2000
+    Resp_12 = k_resp* inputs2000 ;
+    
+
 
     
     # Accounting for respiration
@@ -434,7 +465,7 @@ for n in np.arange(0, nsteps, 1):
         #Oxygen12[n+1] = Oxygen12[n] + ( Down_11 - Up_12 - Resp_12) * dt
         
  
-    resp_constant = 0 ;
+    resp_constant = 0.00002 ;
     if n < nsteps-1:
         if Oxygen1[n] >= resp_constant:
             Oxygen1[n+1] = Oxygen1[n] + ( Airsea + Up_2 - Down_1 - Resp_1 ) * dt ;
@@ -495,9 +526,10 @@ for n in np.arange(0, nsteps, 1):
             Oxygen12[n+1] = Oxygen12[n] + ( Down_11 - Up_12 - Resp_12) * dt
         else:
             Oxygen12[n+1] = Oxygen12[n] + ( Down_11 - Up_12 ) * dt
-                
+            
         #### Update model time         
         t[n+1] = t[n] + dt ;
+                       
         
 #### make a single large figure
 fig = plt.figure(figsize=(25,20))
@@ -595,5 +627,23 @@ oxygen_penetration_depth = depths[index_below_threshold]
 print(f"The depth at which oxygen concentration drops below {threshold} is approximately {oxygen_penetration_depth} meters.")
         
 
-    # Update the maximum oxygen depth
+# Calculate the indices where Oxygen[i] < resp_constant for each time step
+indices = np.where(np.array([Oxygen1, Oxygen2, Oxygen3, Oxygen4, Oxygen5, Oxygen6, Oxygen7, Oxygen8, Oxygen9, Oxygen10, Oxygen11, Oxygen12]) < resp_constant)[1:] + np.arange(nsteps)[:, None]
+
+# Calculate the depths where oxygen drops below the respconstant
+depths_below_resp_constant = indices * 20
+
+# Find the first depths where oxygen drops below the resp_constant
+first_depths_below_resp_constant = depths_below_resp_constant[np.argsort(indices[:, 0])[0]]
+
+print("First Depths Where Oxygen Drops Below the Respiration Constant: \n", first_depths_below_resp_constant)
+# Convert the list to a NumPy array
+#penetration_depths = np.array(penetration_depths)
+    
+#plt.plot(t[:-1], penetration_depths[:-1])
+#plt.xlabel('Time (years)')
+#plt.ylabel('Oxygen Penetration Depth (m)')
+#plt.title('Oxygen Penetration Depth Over Time')
+#plt.grid()
+#plt.show()
 # ma
